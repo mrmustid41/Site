@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout - Grow a Garden</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      background: #87ceeb;
+      font-family: sans-serif;
+    }
+    .background {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #87ceeb 60%, #3a932c 40%);
+    }
+    .cloud {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+    }
+    .cloud1 {
+      width: 150px; height: 80px;
+      top: 50px; left: 100px;
+      box-shadow: 40px 10px 0 white, 80px 20px 0 white;
+    }
+    .cloud2 {
+      width: 120px; height: 70px;
+      top: 120px; left: 300px;
+      box-shadow: 40px 10px 0 white, 80px 20px 0 white;
+    }
+    .ground {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 35%;
+      background: #3a932c;
+      border-top-left-radius: 80px;
+      border-top-right-radius: 80px;
+      box-shadow: inset 0 6px 15px rgba(0,0,0,0.1);
+    }
+    .checkout-container {
+      position: relative;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 60px auto;
+      padding: 20px;
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+    .checkout-block {
+      background: #8fd05a;
+      border-radius: 30px;
+      padding: 25px;
+      flex: 1 1 300px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .checkout-block h2 {
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #003800;
+      text-align: center;
+    }
+    .circle-card {
+      background: white;
+      border-radius: 30px;
+      padding: 20px;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      min-height: 180px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+    .circle-card p, .circle-card strong {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #004400;
+      text-align: center;
+    }
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 10px 15px;
+      font-size: 1rem;
+      border-radius: 20px;
+      border: 2px solid #3a932c;
+      box-sizing: border-box;
+      outline: none;
+    }
+    button {
+      background: #3a932c;
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: 150px;
+      margin-top: 5px;
+    }
+    button:hover {
+      background: #2e6a20;
+    }
+    .items-list {
+      width: 100%;
+      max-height: 180px;
+      overflow-y: auto;
+      text-align: left;
+      border: 1px solid #3a932c;
+      padding: 10px;
+      border-radius: 15px;
+      background: #e0f2c6;
+    }
+    .items-list p {
+      margin: 5px 0;
+      font-weight: 600;
+      color: #1f4500;
+    }
+  </style>
+</head>
+<body class="cart-body">
+  <div class="background">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="ground"></div>
+
+    <div class="checkout-container">
+      <div class="checkout-block">
+        <h2>1. Confirm Cart</h2>
+        <div class="circle-card">
+          <div class="items-list" id="cartItems">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="checkout-block">
+        <h2>2. Enter the Info</h2>
+        <div class="circle-card">
+          <input type="text" id="username" placeholder="Roblox Username" />
+          <button class="check-button" id="checkValidityBtn">Check Validity</button>
+          <input type="email" id="email" placeholder="Email" />
+          <input type="email" id="confirmEmail" placeholder="Confirm Email" />
+          <p id="validityMessage" style="color:red; font-weight:bold;"></p>
+        </div>
+      </div>
+
+      <div class="checkout-block">
+        <h2>3. Pay</h2>
+        <div class="circle-card">
+          <p>Total: <strong id="totalAmount">$0.00</strong></p>
+          <button class="pay-button" id="payNowBtn">Pay Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cartItemsDiv = document.getElementById('cartItems');
+    const totalAmountElem = document.getElementById('totalAmount');
+
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem('growAGCart')) || {};
+      const validItems = Object.entries(cart).filter(([name, data]) => data.quantity > 0);
+
+      if (validItems.length === 0) {
+        cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
+        totalAmountElem.textContent = '$0.00';
+        return;
+      }
+
+      cartItemsDiv.innerHTML = '';
+      let total = 0;
+      validItems.forEach(([name, data]) => {
+        const itemTotal = data.price * data.quantity;
+        total += itemTotal;
+        const p = document.createElement('p');
+        p.textContent = `${name} x${data.quantity} - $${itemTotal.toFixed(2)}`;
+        cartItemsDiv.appendChild(p);
+      });
+
+      totalAmountElem.textContent = `$${total.toFixed(2)}`;
+    }
+
+    renderCart();
+
+    document.getElementById('checkValidityBtn').addEventListener('click', () => {
+      const username = document.getElementById('username').value.trim();
+      const messageElem = document.getElementById('validityMessage');
+
+      if (!username) {
+        messageElem.textContent = 'Please enter your Roblox username.';
+        messageElem.style.color = 'red';
+        return;
+      }
+
+      // Placeholder: always say it's valid
+      messageElem.style.color = 'green';
+      messageElem.textContent = 'Username looks valid!';
+    });
+
+    document.getElementById('payNowBtn').addEventListener('click', () => {
+      alert('Payment functionality is not yet implemented.');
+    });
+
+    // Optional: listen to cart changes if user updates cart in another tab
+    window.addEventListener('storage', renderCart);
+  </script>
+</body>
+</html>

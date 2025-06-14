@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grow a Garden Store</title>
+  <style>
+    body {
+      background: #87ceeb;
+      margin: 0;
+    }
+    header {
+      background: #3a932c;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    header nav a {
+      text-decoration: none;
+      background: #add655;
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 10px;
+      color: #000;
+      font-weight: bold;
+      border: 2px solid #000;
+      cursor: pointer;
+    }
+    .cart-button {
+      background: black;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .store {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .item {
+      background: #60bb46;
+      border: 3px solid #000;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+    .price del {
+      color: red;
+    }
+    .price ins {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+    .quantity {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .quantity button {
+      padding: 5px 10px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      border: 2px solid black;
+      background: white;
+      cursor: pointer;
+      user-select: none;
+    }
+    .quantity span.count {
+      min-width: 20px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="orders.html">Orders</a>
+    <a href="faq.html">FAQ</a>
+    <a href="tos.html">TOS</a>
+    <a href="discord.html">Discord</a>
+  </nav>
+  <a href="checkout.html" id="viewCart" class="cart-button">🛒 Cart</a>
+</header>
+
+<h1 style="text-align:center;">SHOP GROW A GARDEN!</h1>
+
+<div class="store">
+  <div class="item" data-name="Disco Bee" data-price="29.99">
+    <h3>Disco Bee</h3>
+    <img src="https://via.placeholder.com/100x100?text=Bee" alt="Disco Bee" />
+    <div class="price"><del>$35.99</del> <ins>$29.99</ins></div>
+    <div class="quantity">
+      <button class="minus" aria-label="Decrease Disco Bee quantity">−</button>
+      <span class="count">0</span>
+      <button class="plus" aria-label="Increase Disco Bee quantity">+</button>
+    </div>
+  </div>
+
+  <div class="item" data-name="Queen Bee" data-price="24.99">
+    <h3>Queen Bee</h3>
+    <img src="https://via.placeholder.com/100x100?text=Queen" alt="Queen Bee" />
+    <div class="price"><del>$49.99</del> <ins>$24.99</ins></div>
+    <div class="quantity">
+      <button class="minus" aria-label="Decrease Queen Bee quantity">−</button>
+      <span class="count">0</span>
+      <button class="plus" aria-label="Increase Queen Bee quantity">+</button>
+    </div>
+  </div>
+
+  <div class="item" data-name="Red Fox" data-price="9.99">
+    <h3>Red Fox</h3>
+    <img src="https://via.placeholder.com/100x100?text=Fox" alt="Red Fox" />
+    <div class="price"><del>$14.99</del> <ins>$9.99</ins></div>
+    <div class="quantity">
+      <button class="minus" aria-label="Decrease Red Fox quantity">−</button>
+      <span class="count">0</span>
+      <button class="plus" aria-label="Increase Red Fox quantity">+</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Load cart from localStorage or create new
+  let cart = JSON.parse(localStorage.getItem('growAGCart')) || {};
+
+  // Save cart back to localStorage
+  function saveCart() {
+    localStorage.setItem('growAGCart', JSON.stringify(cart));
+  }
+
+  // Initialize counts and cart object for all items
+  document.querySelectorAll('.item').forEach(item => {
+    const name = item.dataset.name;
+    const price = parseFloat(item.dataset.price);
+    if (!cart[name]) {
+      cart[name] = { price: price, quantity: 0 };
+    }
+    const countSpan = item.querySelector('.count');
+    countSpan.textContent = cart[name].quantity;
+  });
+
+  // Add event listeners for plus/minus buttons
+  document.querySelectorAll('.item').forEach(item => {
+    const name = item.dataset.name;
+    const countSpan = item.querySelector('.count');
+    const plusBtn = item.querySelector('.plus');
+    const minusBtn = item.querySelector('.minus');
+
+    plusBtn.addEventListener('click', () => {
+      cart[name].quantity++;
+      countSpan.textContent = cart[name].quantity;
+      saveCart();
+    });
+
+    minusBtn.addEventListener('click', () => {
+      if (cart[name].quantity > 0) {
+        cart[name].quantity--;
+        countSpan.textContent = cart[name].quantity;
+        saveCart();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
