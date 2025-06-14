@@ -1,0 +1,97 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.cart-body {
+  background: #87ceeb;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+.cloud {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.cloud1 {
+  width: 100px;
+  height: 100px;
+  top: 50px;
+  left: 30px;
+}
+
+.cloud2 {
+  width: 140px;
+  height: 140px;
+  top: 100px;
+  right: 50px;
+}
+
+.ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: #4caf50;
+  z-index: 1;
+}
+
+.checkout-container {
+  position: relative;
+  z-index: 2;
+  margin: 40px auto;
+  padding: 30px;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 30px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.checkout-block h2 {
+  font-size: 1.4em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.circle-card {
+  background: #f0fff0;
+  border: 2px solid #8bc34a;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background: #ffffff;
+}
+
+.check-button, .pay-button {
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s ease;
+}
+
+.check-button:hover, .pay-button:hover {
+  background: #14833b;
+}

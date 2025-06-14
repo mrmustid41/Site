@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grow a Garden Store</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: #87ceeb;
+      margin: 0;
+    }
+
+    header {
+      background: #3a932c;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    header nav a {
+      text-decoration: none;
+      background: #add655;
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 10px;
+      color: #000;
+      font-weight: bold;
+      border: 2px solid #000;
+    }
+
+    .cart-button {
+      background: black;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .store {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .item {
+      background: #60bb46;
+      border: 3px solid #000;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .price del {
+      color: red;
+    }
+
+    .price ins {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+
+    .quantity {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .quantity button {
+      padding: 5px 10px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      border: 2px solid black;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Orders</a>
+    <a href="#">FAQ</a>
+    <a href="#">TOS</a>
+    <a href="#">Discord</a>
+  </nav>
+  <a href="#" id="viewCart" class="cart-button">🛒 Cart</a>
+</header>
+
+<h1 style="text-align:center;">SHOP GROW A GARDEN!</h1>
+
+<div class="store">
+  <div class="item">
+    <h3>Disco Bee</h3>
+    <img src="https://via.placeholder.com/100x100?text=Bee" alt="Disco Bee">
+    <div class="price"><del>$35.99</del> <ins>$29.99</ins></div>
+    <div class="quantity">
+      <button class="minus">−</button>
+      <span class="count">0</span>
+      <button class="plus">+</button>
+    </div>
+  </div>
+
+  <div class="item">
+    <h3>Queen Bee</h3>
+    <img src="https://via.placeholder.com/100x100?text=Queen" alt="Queen Bee">
+    <div class="price"><del>$49.99</del> <ins>$24.99</ins></div>
+    <div class="quantity">
+      <button class="minus">−</button>
+      <span class="count">0</span>
+      <button class="plus">+</button>
+    </div>
+  </div>
+
+  <div class="item">
+    <h3>Red Fox</h3>
+    <img src="https://via.placeholder.com/100x100?text=Fox" alt="Red Fox">
+    <div class="price"><del>$14.99</del> <ins>$9.99</ins></div>
+    <div class="quantity">
+      <button class="minus">−</button>
+      <span class="count">0</span>
+      <button class="plus">+</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const cart = {};
+
+  document.querySelectorAll('.item').forEach(item => {
+    const name = item.querySelector('h3').textContent;
+    const plus = item.querySelector('.plus');
+    const minus = item.querySelector('.minus');
+    const countDisplay = item.querySelector('.count');
+    let count = 0;
+
+    plus.addEventListener('click', () => {
+      count++;
+      cart[name] = count;
+      countDisplay.textContent = count;
+    });
+
+    minus.addEventListener('click', () => {
+      if (count > 0) {
+        count--;
+        cart[name] = count;
+        countDisplay.textContent = count;
+      }
+    });
+  });
+
+  document.getElementById('viewCart').addEventListener('click', () => {
+    let message = '🛒 Your Cart:\n\n';
+    let hasItems = false;
+    for (let item in cart) {
+      if (cart[item] > 0) {
+        hasItems = true;
+        message += `${item}: ${cart[item]}\n`;
+      }
+    }
+    if (!hasItems) {
+      message = 'Your cart is empty.';
+    }
+    alert(message);
+  });
+</script>
+
+</body>
+</html>
