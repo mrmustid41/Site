@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +6,6 @@
   <title>Grow a Garden Store</title>
   <style>
     body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
       background: #87ceeb;
       margin: 0;
     }
@@ -87,13 +85,13 @@
 
 <header>
   <nav>
-    <a href="#">Home</a>
-    <a href="#">Orders</a>
-    <a href="#">FAQ</a>
-    <a href="#">TOS</a>
-    <a href="#">Discord</a>
+    <a href="index.html">Home</a>
+    <a href="cart.html">Orders</a>
+    <a href="faq.html">FAQ</a>
+    <a href="tos.html">TOS</a>
+    <a href="https://discord.gg/yourserver" target="_blank" rel="noopener">Discord</a>
   </nav>
-  <a href="#" id="viewCart" class="cart-button">🛒 Cart</a>
+  <a href="cart.html" class="cart-button">🛒 Cart</a>
 </header>
 
 <h1 style="text-align:center;">SHOP GROW A GARDEN!</h1>
@@ -158,20 +156,7 @@
     });
   });
 
-  document.getElementById('viewCart').addEventListener('click', () => {
-    let message = '🛒 Your Cart:\n\n';
-    let hasItems = false;
-    for (let item in cart) {
-      if (cart[item] > 0) {
-        hasItems = true;
-        message += `${item}: ${cart[item]}\n`;
-      }
-    }
-    if (!hasItems) {
-      message = 'Your cart is empty.';
-    }
-    alert(message);
-  });
+  // Removed alert from cart button, it now goes to cart.html page
 </script>
 
 </body>
