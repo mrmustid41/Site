@@ -130,13 +130,14 @@
     }
   </style>
 </head>
-<body class="cart-body">
+<body>
   <div class="background">
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
     <div class="ground"></div>
 
     <div class="checkout-container">
+      <!-- 1. Confirm Cart -->
       <div class="checkout-block">
         <h2>1. Confirm Cart</h2>
         <div class="circle-card">
@@ -146,23 +147,23 @@
         </div>
       </div>
 
+      <!-- 2. Enter the Info -->
       <div class="checkout-block">
         <h2>2. Enter the Info</h2>
         <div class="circle-card">
           <input type="text" id="username" placeholder="Roblox Username" />
-          <button class="check-button" id="checkValidityBtn">Check Validity</button>
+          <button id="checkValidityBtn">Check Validity</button>
           <input type="email" id="email" placeholder="Email" />
           <input type="email" id="confirmEmail" placeholder="Confirm Email" />
-          <p id="validityMessage" style="color:red; font-weight:bold;"></p>
+          <p id="validityMessage" style="font-weight:bold;"></p>
         </div>
       </div>
 
+      <!-- 3. Pay -->
       <div class="checkout-block">
         <h2>3. Pay</h2>
         <div class="circle-card">
           <p>Total: <strong id="totalAmount">R0.00</strong></p>
-
-          <!-- PayFast Payment Form -->
           <form action="https://www.payfast.co.za/eng/process" method="post" id="payfastForm">
             <input type="hidden" name="merchant_id" value="30557847">
             <input type="hidden" name="merchant_key" value="anj3eopfk1vm8">
@@ -172,22 +173,27 @@
             <input type="hidden" name="cancel_url" value="https://yourdomain.com/cancel.html">
             <input type="submit" value="Pay Now" />
           </form>
-
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const cartItemsDiv = document.getElementById('cartItems');
+    const cartItemsDiv   = document.getElementById('cartItems');
     const totalAmountElem = document.getElementById('totalAmount');
-    const pfAmount = document.getElementById('pfAmount');
+    const pfAmount        = document.getElementById('pfAmount');
+    const usernameInput   = document.getElementById('username');
+    const emailInput      = document.getElementById('email');
+    const confirmEmail    = document.getElementById('confirmEmail');
+    const validityMsg     = document.getElementById('validityMessage');
+    const checkBtn        = document.getElementById('checkValidityBtn');
+    const payForm         = document.getElementById('payfastForm');
 
     function renderCart() {
       const cart = JSON.parse(localStorage.getItem('growAGCart')) || {};
-      const validItems = Object.entries(cart).filter(([name, data]) => data.quantity > 0);
+      const items = Object.entries(cart).filter(([_,d]) => d.quantity > 0);
 
-      if (validItems.length === 0) {
+      if (items.length === 0) {
         cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
         totalAmountElem.textContent = 'R0.00';
         pfAmount.value = '0.00';
@@ -196,11 +202,12 @@
 
       cartItemsDiv.innerHTML = '';
       let total = 0;
-      validItems.forEach(([name, data]) => {
-        const itemTotal = data.price * data.quantity;
-        total += itemTotal;
+
+      items.forEach(([name, data]) => {
+        const lineTotal = data.price * data.quantity; // now already in ZAR
+        total += lineTotal;
         const p = document.createElement('p');
-        p.textContent = `${name} x${data.quantity} - R${itemTotal.toFixed(2)}`;
+        p.textContent = `${name} x${data.quantity} — R${lineTotal.toFixed(2)}`;
         cartItemsDiv.appendChild(p);
       });
 
@@ -210,21 +217,29 @@
 
     renderCart();
 
-    document.getElementById('checkValidityBtn').addEventListener('click', () => {
-      const username = document.getElementById('username').value.trim();
-      const messageElem = document.getElementById('validityMessage');
-
-      if (!username) {
-        messageElem.textContent = 'Please enter your Roblox username.';
-        messageElem.style.color = 'red';
-        return;
+    // Username “validation” (stub)
+    checkBtn.addEventListener('click', () => {
+      const name = usernameInput.value.trim();
+      if (!name) {
+        validityMsg.style.color = 'red';
+        validityMsg.textContent = 'Please enter your Roblox username.';
+      } else {
+        validityMsg.style.color = 'green';
+        validityMsg.textContent = 'Username looks valid!';
       }
-
-      messageElem.style.color = 'green';
-      messageElem.textContent = 'Username looks valid!';
     });
 
-    // Optional: auto-update if cart changes in another tab
+    // (Optional) prevent payment until basic checks pass
+    payForm.addEventListener('submit', e => {
+      const email = emailInput.value.trim();
+      if (!usernameInput.value.trim() || !email || email !== confirmEmail.value.trim()) {
+        e.preventDefault();
+        validityMsg.style.color = 'red';
+        validityMsg.textContent = 'Please complete and verify your username & email before paying.';
+      }
+    });
+
+    // If cart changes elsewhere, re-render
     window.addEventListener('storage', renderCart);
   </script>
 </body>
