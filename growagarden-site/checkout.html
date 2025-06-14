@@ -189,7 +189,7 @@
 
       if (validItems.length === 0) {
         cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
-        totalAmountElem.textContent = '$0.00';
+        totalAmountElem.textContent = 'R0.00';
         pfAmount.value = '0.00';
         return;
       }
@@ -200,11 +200,11 @@
         const itemTotal = data.price * data.quantity;
         total += itemTotal;
         const p = document.createElement('p');
-        p.textContent = `${name} x${data.quantity} - $${itemTotal.toFixed(2)}`;
+        p.textContent = `${name} x${data.quantity} - R${itemTotal.toFixed(2)}`;
         cartItemsDiv.appendChild(p);
       });
 
-      totalAmountElem.textContent = `$${total.toFixed(2)}`;
+      totalAmountElem.textContent = `R${total.toFixed(2)}`;
       pfAmount.value = total.toFixed(2);
     }
 
