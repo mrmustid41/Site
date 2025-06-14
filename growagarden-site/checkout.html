@@ -200,11 +200,11 @@
         const itemTotal = data.price * data.quantity;
         total += itemTotal;
         const p = document.createElement('p');
-        p.textContent = `${name} x${data.quantity} - $${itemTotal.toFixed(2)}`;
+        p.textContent = ${name} x${data.quantity} - $${itemTotal.toFixed(2)};
         cartItemsDiv.appendChild(p);
       });
 
-      totalAmountElem.textContent = `$${total.toFixed(2)}`;
+      totalAmountElem.textContent = $${total.toFixed(2)};
       pfAmount.value = total.toFixed(2);
     }
 
