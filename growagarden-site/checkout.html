@@ -7,40 +7,41 @@
   <style>
     body, html {
       margin: 0; padding: 0; height: 100%;
-      background: #87ceeb;
+      background: #111;
       font-family: sans-serif;
+      color: #eee;
     }
     .background {
       position: relative;
       min-height: 100vh;
       overflow: hidden;
-      background: linear-gradient(to bottom, #87ceeb 60%, #3a932c 40%);
+      background: linear-gradient(to bottom, #222 60%, #333 40%);
     }
     .cloud {
       position: absolute;
-      background: white;
+      background: #444;
       border-radius: 50%;
-      opacity: 0.8;
-      filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+      opacity: 0.5;
+      filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.4));
     }
     .cloud1 {
       width: 150px; height: 80px;
       top: 50px; left: 100px;
-      box-shadow: 40px 10px 0 white, 80px 20px 0 white;
+      box-shadow: 40px 10px 0 #444, 80px 20px 0 #444;
     }
     .cloud2 {
       width: 120px; height: 70px;
       top: 120px; left: 300px;
-      box-shadow: 40px 10px 0 white, 80px 20px 0 white;
+      box-shadow: 40px 10px 0 #444, 80px 20px 0 #444;
     }
     .ground {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       height: 35%;
-      background: #3a932c;
+      background: #1a1a1a;
       border-top-left-radius: 80px;
       border-top-right-radius: 80px;
-      box-shadow: inset 0 6px 15px rgba(0,0,0,0.1);
+      box-shadow: inset 0 6px 15px rgba(0,0,0,0.3);
     }
     .checkout-container {
       position: relative;
@@ -55,11 +56,11 @@
       flex-wrap: wrap;
     }
     .checkout-block {
-      background: #8fd05a;
+      background: #2a2a2a;
       border-radius: 30px;
       padding: 25px;
       flex: 1 1 300px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.3);
+      box-shadow: 0 0 12px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -67,11 +68,11 @@
     .checkout-block h2 {
       margin-bottom: 20px;
       font-weight: bold;
-      color: #003800;
+      color: #fff;
       text-align: center;
     }
     .circle-card {
-      background: white;
+      background: #1f1f1f;
       border-radius: 30px;
       padding: 20px;
       width: 100%;
@@ -81,12 +82,12 @@
       gap: 15px;
       align-items: center;
       min-height: 180px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
     }
     .circle-card p, .circle-card strong {
       margin: 0;
       font-size: 1.1rem;
-      color: #004400;
+      color: #ccc;
       text-align: center;
     }
     input[type="text"], input[type="email"] {
@@ -94,9 +95,11 @@
       padding: 10px 15px;
       font-size: 1rem;
       border-radius: 20px;
-      border: 2px solid #3a932c;
+      border: 2px solid #555;
       box-sizing: border-box;
       outline: none;
+      background: #111;
+      color: #fff;
     }
     button, input[type="submit"] {
       background: #3a932c;
@@ -118,15 +121,15 @@
       max-height: 180px;
       overflow-y: auto;
       text-align: left;
-      border: 1px solid #3a932c;
+      border: 1px solid #555;
       padding: 10px;
       border-radius: 15px;
-      background: #e0f2c6;
+      background: #2b2b2b;
     }
     .items-list p {
       margin: 5px 0;
       font-weight: 600;
-      color: #1f4500;
+      color: #ddd;
     }
   </style>
 </head>
@@ -179,7 +182,7 @@
   </div>
 
   <script>
-    const cartItemsDiv   = document.getElementById('cartItems');
+    const cartItemsDiv    = document.getElementById('cartItems');
     const totalAmountElem = document.getElementById('totalAmount');
     const pfAmount        = document.getElementById('pfAmount');
     const usernameInput   = document.getElementById('username');
@@ -191,7 +194,7 @@
 
     function renderCart() {
       const cart = JSON.parse(localStorage.getItem('growAGCart')) || {};
-      const items = Object.entries(cart).filter(([_,d]) => d.quantity > 0);
+      const items = Object.entries(cart).filter(([_, d]) => d.quantity > 0);
 
       if (items.length === 0) {
         cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
@@ -204,32 +207,30 @@
       let total = 0;
 
       items.forEach(([name, data]) => {
-        const lineTotal = data.price * data.quantity; // now already in ZAR
+        const lineTotal = data.price * data.quantity;
         total += lineTotal;
         const p = document.createElement('p');
-        p.textContent = ${name} x${data.quantity} — R${lineTotal.toFixed(2)};
+        p.textContent = `${name} x${data.quantity} — R${lineTotal.toFixed(2)}`;
         cartItemsDiv.appendChild(p);
       });
 
-      totalAmountElem.textContent = R${total.toFixed(2)};
+      totalAmountElem.textContent = `R${total.toFixed(2)}`;
       pfAmount.value = total.toFixed(2);
     }
 
     renderCart();
 
-    // Username “validation” (stub)
     checkBtn.addEventListener('click', () => {
       const name = usernameInput.value.trim();
       if (!name) {
         validityMsg.style.color = 'red';
         validityMsg.textContent = 'Please enter your Roblox username.';
       } else {
-        validityMsg.style.color = 'green';
+        validityMsg.style.color = 'lightgreen';
         validityMsg.textContent = '(must join discord server!)';
       }
     });
 
-    // (Optional) prevent payment until basic checks pass
     payForm.addEventListener('submit', e => {
       const email = emailInput.value.trim();
       if (!usernameInput.value.trim() || !email || email !== confirmEmail.value.trim()) {
@@ -239,7 +240,6 @@
       }
     });
 
-    // If cart changes elsewhere, re-render
     window.addEventListener('storage', renderCart);
   </script>
 </body>
