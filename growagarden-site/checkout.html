@@ -2,235 +2,174 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Checkout - Grow a Garden</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grow a Garden Pets</title>
   <style>
-    body, html {
-      margin: 0; padding: 0; height: 100%;
-      background: #000;
+    body {
+      background: #000;       /* pure black */
+      color: #ccc;            /* light grey text */
+      margin: 0;
       font-family: sans-serif;
-      color: #ccc;
     }
-    .background {
-      position: relative;
-      min-height: 100vh;
-      overflow: hidden;
-      background: linear-gradient(to bottom, #111 60%, #222 40%);
-    }
-    .cloud {
-      position: absolute;
-      background: #333;
-      border-radius: 50%;
-      opacity: 0.6;
-      filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.7));
-    }
-    .cloud1 {
-      width: 150px; height: 80px;
-      top: 50px; left: 100px;
-      box-shadow: 40px 10px 0 #333, 80px 20px 0 #333;
-    }
-    .cloud2 {
-      width: 120px; height: 70px;
-      top: 120px; left: 300px;
-      box-shadow: 40px 10px 0 #333, 80px 20px 0 #333;
-    }
-    .ground {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 35%;
-      background: #222;
-      border-top-left-radius: 80px;
-      border-top-right-radius: 80px;
-      box-shadow: inset 0 6px 15px rgba(0,0,0,0.5);
-    }
-    .checkout-container {
-      position: relative;
+    header {
+      background: #222;       /* very dark grey */
+      padding: 10px;
       display: flex;
-      justify-content: space-around;
-      align-items: flex-start;
-      gap: 20px;
-      max-width: 1100px;
-      margin: 60px auto;
-      padding: 20px;
-      z-index: 10;
+      justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
     }
-    .checkout-block {
-      background: #333;
-      border-radius: 30px;
-      padding: 25px;
-      flex: 1 1 300px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.7);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .checkout-block h2 {
-      margin-bottom: 20px;
+    header nav a {
+      text-decoration: none;
+      background: #333;       /* mid-dark grey */
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 10px;
+      color: #ddd;            /* off-white text */
       font-weight: bold;
-      color: #ddd;
-      text-align: center;
-    }
-    .circle-card {
-      background: #111;
-      border-radius: 30px;
-      padding: 20px;
-      width: 100%;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      align-items: center;
-      min-height: 180px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.6);
-    }
-    .circle-card p, .circle-card strong {
-      margin: 0;
-      font-size: 1.1rem;
-      color: #ccc;
-      text-align: center;
-    }
-    input[type="text"], input[type="email"] {
-      width: 100%;
-      padding: 10px 15px;
-      font-size: 1rem;
-      border-radius: 20px;
-      border: 2px solid #444;
-      background: #222;
-      color: #ccc;
-      box-sizing: border-box;
-      outline: none;
-    }
-    button, input[type="submit"] {
-      background: #333;
-      color: #ddd;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 20px;
+      border: 2px solid #444; /* slightly lighter grey border */
       cursor: pointer;
-      transition: background 0.3s ease;
-      width: 150px;
-      margin-top: 5px;
     }
-    button:hover, input[type="submit"]:hover {
-      background: #555;
+    .cart-button {
+      background: #000;       /* pure black */
+      color: #ddd;            /* off-white text */
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      border: 2px solid #444;
+      cursor: pointer;
     }
-    .items-list {
-      width: 100%;
-      max-height: 180px;
-      overflow-y: auto;
-      text-align: left;
-      border: 1px solid #444;
-      padding: 10px;
-      border-radius: 15px;
-      background: #222;
-    }
-    .items-list p {
-      margin: 5px 0;
-      font-weight: 600;
-      color: #ccc;
-    }
-    #validityMessage {
-      color: #ccc;
+    h1 {
+      color: #ddd !important; /* ensure your heading shows in grey */
       text-align: center;
+      margin: 20px 0;
+    }
+    .store {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .item {
+      background: #111;       /* nearly black cards */
+      border: 3px solid #444; /* dark grey border */
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+    .price del {
+      color: #777;            /* muted grey for old price */
+    }
+    .price ins {
+      text-decoration: none;
+      color: #ccc;            /* light grey for current price */
+      font-weight: bold;
+    }
+    .quantity {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
       margin-top: 10px;
+    }
+    .quantity button {
+      padding: 5px 10px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      border: 2px solid #444;
+      background: #333;       /* button grey */
+      color: #ddd;
+      cursor: pointer;
+      user-select: none;
+    }
+    .quantity span.count {
+      min-width: 20px;
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-  <div class="background">
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
-    <div class="ground"></div>
 
-    <div class="checkout-container">
-      <!-- 1. Confirm Cart -->
-      <div class="checkout-block">
-        <h2>1. Confirm Cart</h2>
-        <div class="circle-card">
-          <div class="items-list" id="cartItems">
-            <!-- Filled by JS -->
-          </div>
-        </div>
-      </div>
+<header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="orders.html">Orders</a>
+    <a href="faq.html">FAQ</a>
+    <a href="tos.html">TOS</a>
+    <a href="https://discord.gg/TZxrVqADx8">Discord</a>
+  </nav>
+  <a href="checkout.html" id="viewCart" class="cart-button">🛒 Cart</a>
+</header>
 
-      <!-- 2. Enter the Info -->
-      <div class="checkout-block">
-        <h2>2. Enter the Info</h2>
-        <div class="circle-card">
-          <input type="text" id="username" placeholder="Roblox Username" />
-          <button id="checkValidityBtn">Check Validity</button>
-          <input type="email" id="email" placeholder="Email" />
-          <input type="email" id="confirmEmail" placeholder="Confirm Email" />
-          <p id="validityMessage" style="font-weight:bold;"></p>
-        </div>
-      </div>
+<h1>SHOP GROW A GARDEN PETS!</h1>
 
-      <!-- 3. Pay -->
-      <div class="checkout-block">
-        <h2>3. Pay</h2>
-        <div class="circle-card">
-          <p>Total: <strong id="totalAmount">R0.00</strong></p>
-          <form action="https://www.payfast.co.za/eng/process" method="post" id="payfastForm">
-            <input type="hidden" name="merchant_id" value="30557847">
-            <input type="hidden" name="merchant_key" value="anj3eopfk1vm8">
-            <input type="hidden" name="amount" id="pfAmount" value="0.00">
-            <input type="hidden" name="item_name" value="Grow a Garden Roblox Pets">
-            <input type="hidden" name="return_url" value="https://yourdomain.com/success.html">
-            <input type="hidden" name="cancel_url" value="https://yourdomain.com/cancel.html">
-            <input type="submit" value="Pay Now" />
-          </form>
-        </div>
-      </div>
+<div class="store">
+  <div class="item" data-name="Racoon" data-price="500">
+    <h3>Racoon</h3>
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/... (truncated for brevity)" alt="Racoon" />
+    <div class="price"><del>R700</del> <ins>R500</ins></div>
+    <div class="quantity">
+      <button class="minus" aria-label="Decrease Racoon quantity">−</button>
+      <span class="count">0</span>
+      <button class="plus" aria-label="Increase Racoon quantity">+</button>
     </div>
   </div>
 
-  <script>
-    const cartItemsDiv   = document.getElementById('cartItems');
-    const totalAmountElem = document.getElementById('totalAmount');
-    const pfAmount        = document.getElementById('pfAmount');
-    const usernameInput   = document.getElementById('username');
-    const emailInput      = document.getElementById('email');
-    const confirmEmail    = document.getElementById('confirmEmail');
-    const validityMsg     = document.getElementById('validityMessage');
-    const checkBtn        = document.getElementById('checkValidityBtn');
-    const payForm         = document.getElementById('payfastForm');
+  <div class="item" data-name="Queen Bee" data-price="500">
+    <h3>Queen Bee</h3>
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/... (truncated for brevity)" alt="Queen Bee" />
+    <div class="price"><del>R1000</del> <ins>R500</ins></div>
+    <div class="quantity">
+      <button class="minus" aria-label="Decrease Queen Bee quantity">−</button>
+      <span class="count">0</span>
+      <button class="plus" aria-label="Increase Queen Bee quantity">+</button>
+    </div>
+  </div>
 
-    function renderCart() {
-      const cart = JSON.parse(localStorage.getItem('growAGCart')) || {};
-      const items = Object.entries(cart).filter(([_,d]) => d.quantity > 0);
+  <div class="item" data-name="Red Fox" data-price="200">
+    <h3>Red Fox</h3>
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/... (truncated for brevity)" alt="Red Fox" />
+    <div class="price"><del>R300</del> <ins>R200</ins></div>
+    <div class="quantity">
+      <button class="minus" aria-label="Decrease Red Fox quantity">−</button>
+      <span class="count">0</span>
+      <button class="plus" aria-label="Increase Red Fox quantity">+</button>
+    </div>
+  </div>
+</div>
 
-      if (items.length === 0) {
-        cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
-        totalAmountElem.textContent = 'R0.00';
-        pfAmount.value = '0.00';
-        return;
+<script>
+  // Load cart from localStorage or create new
+  let cart = JSON.parse(localStorage.getItem('growAGCart')) || {};
+  function saveCart() {
+    localStorage.setItem('growAGCart', JSON.stringify(cart));
+  }
+  document.querySelectorAll('.item').forEach(item => {
+    const name = item.dataset.name;
+    const price = parseFloat(item.dataset.price);
+    if (!cart[name]) cart[name] = { price, quantity: 0 };
+    item.querySelector('.count').textContent = cart[name].quantity;
+  });
+  document.querySelectorAll('.item').forEach(item => {
+    const name = item.dataset.name;
+    const countSpan = item.querySelector('.count');
+    item.querySelector('.plus').addEventListener('click', () => {
+      cart[name].quantity++;
+      countSpan.textContent = cart[name].quantity;
+      saveCart();
+    });
+    item.querySelector('.minus').addEventListener('click', () => {
+      if (cart[name].quantity > 0) {
+        cart[name].quantity--;
+        countSpan.textContent = cart[name].quantity;
+        saveCart();
       }
+    });
+  });
+</script>
 
-      cartItemsDiv.innerHTML = '';
-      let total = 0;
-
-      items.forEach(([name, data]) => {
-        const lineTotal = data.price * data.quantity;
-        total += lineTotal;
-        const p = document.createElement('p');
-        p.textContent = `${name} x${data.quantity} — R${lineTotal.toFixed(2)}`;
-        cartItemsDiv.appendChild(p);
-      });
-
-      totalAmountElem.textContent = `R${total.toFixed(2)}`;
-      pfAmount.value = total.toFixed(2);
-    }
-
-    renderCart();
-
-    checkBtn.addEventListener('click', () => {
-      const name = usernameInput.value.trim();
-      if (!name) {
-        validityMsg.style.color = 'red';
-        validityMsg.textContent = 'Please enter your Roblox username.';
-      } else {
-        validityMsg.style.color = 'green';
-        validityMsg.textContent = '(must join discord server!)';
-      }
+</body>
+</html>
