@@ -167,13 +167,24 @@
         <h2>3. Pay</h2>
         <div class="circle-card">
           <p>Total: <strong id="totalAmount">R0.00</strong></p>
-          <form action="https://www.payfast.co.za/eng/process" method="post" id="payfastForm">
-            <input type="hidden" name="merchant_id" value="30557847">
-            <input type="hidden" name="merchant_key" value="anj3eopfk1vm8">
-            <input type="hidden" name="amount" id="pfAmount" value="0.00">
+          <form action="https://sandbox.payfast.co.za/eng/process" method="post" id="payfastForm">
+            <!-- SANDBOX credentials -->
+            <input type="hidden" name="merchant_id"  value="10039845">
+            <input type="hidden" name="merchant_key" value="hs00xujqii96l">
+
+            <input type="hidden" name="amount"    id="pfAmount"  value="0.00">
             <input type="hidden" name="item_name" value="Grow a Garden Roblox Pets">
-            <input type="hidden" name="return_url" value="https://yourdomain.com/success.html">
-            <input type="hidden" name="cancel_url" value="https://yourdomain.com/cancel.html">
+
+            <input type="hidden" name="return_url" value="https://growagardenstore.netlify.app/success.html">
+            <input type="hidden" name="cancel_url" value="https://growagardenstore.netlify.app/cancel.html">
+
+            <!-- ADDED: PayFast ITN & custom fields -->
+            <input type="hidden" name="notify_url"       value="https://growagardenstore.netlify.app/.netlify/functions/payfast-notify">
+            <input type="hidden" name="custom_str1"      id="pfCustomerEmail"    value="">
+            <input type="hidden" name="custom_str2"      id="pfCustomerUsername" value="">
+            <input type="hidden" name="custom_str3"      id="pfCartJson"         value="">
+            <!-- END ADDED -->
+
             <input type="submit" value="Pay Now" />
           </form>
         </div>
@@ -232,12 +243,24 @@
     });
 
     payForm.addEventListener('submit', e => {
-      const email = emailInput.value.trim();
-      if (!usernameInput.value.trim() || !email || email !== confirmEmail.value.trim()) {
+      const email    = emailInput.value.trim();
+      const username = usernameInput.value.trim();
+
+      if (!username || !email || email !== confirmEmail.value.trim()) {
         e.preventDefault();
         validityMsg.style.color = 'red';
         validityMsg.textContent = 'Please complete and verify your username & email before paying.';
+        return;
       }
+
+      // ADDED: populate hidden custom_str fields
+      document.getElementById('pfCustomerEmail').value    = email;
+      document.getElementById('pfCustomerUsername').value = username;
+      const cart = Object.entries(JSON.parse(localStorage.getItem('growAGCart') || '{}'))
+        .filter(([_, d]) => d.quantity > 0)
+        .map(([n, d]) => ({ name: n, qty: d.quantity }));
+      document.getElementById('pfCartJson').value = JSON.stringify(cart);
+      // END ADDED
     });
 
     window.addEventListener('storage', renderCart);
