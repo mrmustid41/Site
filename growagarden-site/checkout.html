@@ -101,7 +101,7 @@
       background: #111;
       color: #fff;
     }
-    button, input[type="submit"] {
+    button {
       background: #3a932c;
       color: white;
       font-weight: bold;
@@ -113,7 +113,7 @@
       width: 150px;
       margin-top: 5px;
     }
-    button:hover, input[type="submit"]:hover {
+    button:hover {
       background: #2e6a20;
     }
     .items-list {
@@ -167,15 +167,7 @@
         <h2>3. Pay</h2>
         <div class="circle-card">
           <p>Total: <strong id="totalAmount">R0.00</strong></p>
-          <form action="https://www.payfast.co.za/eng/process" method="post" id="payfastForm">
-            <input type="hidden" name="merchant_id" value="30557847">
-            <input type="hidden" name="merchant_key" value="anj3eopfk1vm8">
-            <input type="hidden" name="amount" id="pfAmount" value="0.00">
-            <input type="hidden" name="item_name" value="Grow a Garden Roblox Pets">
-            <input type="hidden" name="return_url" value="https://yourdomain.com/success.html">
-            <input type="hidden" name="cancel_url" value="https://yourdomain.com/cancel.html">
-            <input type="submit" value="Pay Now" />
-          </form>
+          <button id="coinpalPayBtn">Pay with CoinPal</button>
         </div>
       </div>
     </div>
@@ -184,13 +176,14 @@
   <script>
     const cartItemsDiv    = document.getElementById('cartItems');
     const totalAmountElem = document.getElementById('totalAmount');
-    const pfAmount        = document.getElementById('pfAmount');
     const usernameInput   = document.getElementById('username');
     const emailInput      = document.getElementById('email');
     const confirmEmail    = document.getElementById('confirmEmail');
     const validityMsg     = document.getElementById('validityMessage');
     const checkBtn        = document.getElementById('checkValidityBtn');
-    const payForm         = document.getElementById('payfastForm');
+    const payBtn          = document.getElementById('coinpalPayBtn');
+
+    let total = 0;
 
     function renderCart() {
       const cart = JSON.parse(localStorage.getItem('growAGCart')) || {};
@@ -199,12 +192,12 @@
       if (items.length === 0) {
         cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
         totalAmountElem.textContent = 'R0.00';
-        pfAmount.value = '0.00';
+        total = 0;
         return;
       }
 
       cartItemsDiv.innerHTML = '';
-      let total = 0;
+      total = 0;
 
       items.forEach(([name, data]) => {
         const lineTotal = data.price * data.quantity;
@@ -215,7 +208,6 @@
       });
 
       totalAmountElem.textContent = `R${total.toFixed(2)}`;
-      pfAmount.value = total.toFixed(2);
     }
 
     renderCart();
@@ -231,12 +223,35 @@
       }
     });
 
-    payForm.addEventListener('submit', e => {
+    payBtn.addEventListener('click', async () => {
       const email = emailInput.value.trim();
       if (!usernameInput.value.trim() || !email || email !== confirmEmail.value.trim()) {
-        e.preventDefault();
         validityMsg.style.color = 'red';
         validityMsg.textContent = 'Please complete and verify your username & email before paying.';
+        return;
+      }
+
+      // Call Netlify function to create CoinPal order
+      try {
+        const res = await fetch('/.netlify/functions/create-coinpal-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: total.toFixed(2),
+            item_name: "Grow a Garden Roblox Pets",
+            username: usernameInput.value.trim(),
+            email: email
+          })
+        });
+        const data = await res.json();
+        if (data.payment_url) {
+          window.location.href = data.payment_url; // redirect to CoinPal
+        } else {
+          alert("Error creating CoinPal payment.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong with payment.");
       }
     });
 
