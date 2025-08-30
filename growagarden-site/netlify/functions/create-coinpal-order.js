@@ -1,8 +1,9 @@
 const crypto = require("crypto");
 const fetch = require("node-fetch");
 
-const SECRET_KEY = "c7372872";
-const MERCHANT_NO = "100001765";
+// Your CoinPal credentials
+const SECRET_KEY = "c7372872";   // Replace with your real secret key
+const MERCHANT_NO = "100001765"; // Replace with your real merchant number
 const API_URL = "https://pay.coinpal.io/gateway/pay";
 
 exports.handler = async (event) => {
@@ -14,18 +15,28 @@ exports.handler = async (event) => {
     console.log("Event body:", event.body);
     const { amount, item_name, username, email } = JSON.parse(event.body);
 
+    // Validate inputs
+    if (!amount || !email || !username) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Missing required fields" }) };
+    }
+
+    // Format amount with 2 decimals
     const orderAmount = parseFloat(amount).toFixed(2);
     const orderCurrency = "ZAR";
 
-    const orderNo = `order_${Date.now()}`;
-    const requestId = `req_${Date.now()}`;
+    // Numeric-only unique identifiers
+    const now = Date.now();
+    const orderNo = `${now}`; // numeric only
+    const requestId = `${now}${Math.floor(Math.random() * 1000)}`; // numeric only + random suffix
 
+    // Create signature
     const signString = `${SECRET_KEY}${requestId}${MERCHANT_NO}${orderNo}${orderAmount}${orderCurrency}`;
     const sign = crypto.createHash("sha256").update(signString).digest("hex");
 
     console.log("Sign string:", signString);
     console.log("Sign:", sign);
 
+    // Build form data
     const formData = new URLSearchParams();
     formData.append("version", "2");
     formData.append("requestId", requestId);
@@ -42,6 +53,7 @@ exports.handler = async (event) => {
 
     console.log("Form data:", formData.toString());
 
+    // Send request to CoinPal
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
@@ -51,6 +63,7 @@ exports.handler = async (event) => {
       body: formData,
     });
 
+    // Handle raw response
     const raw = await response.text();
     console.log("Raw CoinPal response:", raw);
 
@@ -66,6 +79,7 @@ exports.handler = async (event) => {
     } else {
       return { statusCode: 400, body: JSON.stringify({ error: data.respMessage || "CoinPal error", result: data }) };
     }
+
   } catch (err) {
     console.error("Function error:", err);
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
