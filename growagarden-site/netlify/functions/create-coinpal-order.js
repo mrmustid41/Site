@@ -1,54 +1,55 @@
-import crypto from "crypto";
-import fetch from "node-fetch"; // make sure to install node-fetch in devDependencies
+const crypto = require("crypto");
+const fetch = require("node-fetch");
 
-export async function handler(event, context) {
-  try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
-    }
+const SECRET_KEY = "your_secret_key";
+const MERCHANT_NO = "your_merchant_no";
+const API_URL = "https://pay.coinpal.io/gateway/pay";
 
-    const { amount, item_name, username, email } = JSON.parse(event.body);
+exports.handler = async (event) => {
+  const { amount, item_name, username, email } = JSON.parse(event.body);
+  const orderNo = `order_${Date.now()}`;
+  const requestId = `req_${Date.now()}`;
 
-    const MERCHANT_NO = "100001765";
-    const SECRET_KEY = "c7372872";
+  const orderAmount = parseFloat(amount).toFixed(2);
+  const orderCurrency = "ZAR";
 
-    const requestId = Date.now().toString();
-    const orderNo = `order_${requestId}`;
-    const orderCurrency = "ZAR";
+  const signString = `${SECRET_KEY}${requestId}${MERCHANT_NO}${orderNo}${orderAmount}${orderCurrency}`;
+  const sign = crypto.createHash("sha256").update(signString).digest("hex");
 
-    const signString = SECRET_KEY + requestId + MERCHANT_NO + orderNo + amount + orderCurrency;
-    const sign = crypto.createHash("sha256").update(signString).digest("hex");
+  const formData = new URLSearchParams();
+  formData.append("version", "2");
+  formData.append("requestId", requestId);
+  formData.append("merchantNo", MERCHANT_NO);
+  formData.append("orderNo", orderNo);
+  formData.append("orderAmount", orderAmount);
+  formData.append("orderCurrency", orderCurrency);
+  formData.append("orderDescription", item_name);
+  formData.append("payerEmail", email);
+  formData.append("notifyURL", "https://yourdomain.com/notify");
+  formData.append("redirectURL", "https://yourdomain.com/redirect");
+  formData.append("cancelURL", "https://yourdomain.com/cancel");
+  formData.append("sign", sign);
 
-    const formData = new URLSearchParams();
-    formData.append("version", "2");
-    formData.append("requestId", requestId);
-    formData.append("merchantNo", MERCHANT_NO);
-    formData.append("orderNo", orderNo);
-    formData.append("orderAmount", amount);
-    formData.append("orderCurrency", orderCurrency);
-    formData.append("orderDescription", item_name || "Grow a Garden Pets");
-    formData.append("notifyURL", "https://growagardenpets.netlify.app/.netlify/functions/coinpal-notify");
-    formData.append("redirectURL", "https://growagardenpets.netlify.app/success.html");
-    formData.append("cancelURL", "https://growagardenpets.netlify.app/cancel.html");
-    formData.append("sign", sign);
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
+    },
+    body: formData,
+  });
 
-    const response = await fetch("https://pay.coinpal.io/gateway/pay/checkout", {
-      method: "POST",
-      body: formData,
-    });
+  const data = await response.json();
 
-    const result = await response.json();
-
-    if (!result.data?.checkoutUrl) {
-      return { statusCode: 500, body: JSON.stringify({ error: "CoinPal returned no checkout URL", result }) };
-    }
-
+  if (data.respCode === "200") {
     return {
       statusCode: 200,
-      body: JSON.stringify({ payment_url: result.data.checkoutUrl }),
+      body: JSON.stringify({ payment_url: data.nextStepContent }),
     };
-  } catch (err) {
-    console.error(err);
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+  } else {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: data.respMessage }),
+    };
   }
-}
+};
