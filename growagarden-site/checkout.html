@@ -167,11 +167,15 @@
         <h2>3. Pay</h2>
         <div class="circle-card">
           <p>Total: <strong id="totalAmount">R0.00</strong></p>
-          <button id="coinpalPayBtn">Pay with CoinPal</button>
+          <!-- PayPal button container -->
+          <div id="paypal-button-container"></div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- PayPal SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AbYAFcFQtVQk5efSFIeKiAqkONYU3q9h15OtFGRxmV2p3p9YiYJKHI4a_ZjsS712ue339cSy8Zp0fAXS&currency=ZAR"></script>
 
   <script>
     const cartItemsDiv    = document.getElementById('cartItems');
@@ -181,7 +185,6 @@
     const confirmEmail    = document.getElementById('confirmEmail');
     const validityMsg     = document.getElementById('validityMessage');
     const checkBtn        = document.getElementById('checkValidityBtn');
-    const payBtn          = document.getElementById('coinpalPayBtn');
 
     let total = 0;
 
@@ -223,37 +226,33 @@
       }
     });
 
-    payBtn.addEventListener('click', async () => {
-      const email = emailInput.value.trim();
-      if (!usernameInput.value.trim() || !email || email !== confirmEmail.value.trim()) {
-        validityMsg.style.color = 'red';
-        validityMsg.textContent = 'Please complete and verify your username & email before paying.';
-        return;
-      }
-
-      // Call Netlify function to create CoinPal order
-      try {
-        const res = await fetch('/.netlify/functions/create-coinpal-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: total.toFixed(2),
-            item_name: "Grow a Garden Roblox Pets",
-            username: usernameInput.value.trim(),
-            email: email
-          })
-        });
-        const data = await res.json();
-        if (data.payment_url) {
-          window.location.href = data.payment_url; // redirect to CoinPal
-        } else {
-          alert("Error creating CoinPal payment.");
+    // Render PayPal button
+    paypal.Buttons({
+      createOrder: function(data, actions) {
+        // Verify username/email before creating order
+        const email = emailInput.value.trim();
+        if (!usernameInput.value.trim() || !email || email !== confirmEmail.value.trim()) {
+          validityMsg.style.color = 'red';
+          validityMsg.textContent = 'Please complete and verify your username & email before paying.';
+          return;
         }
-      } catch (err) {
-        console.error(err);
-        alert("Something went wrong with payment.");
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: total.toFixed(2)
+            },
+            description: "Grow a Garden Roblox Pets"
+          }]
+        });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+          alert('Payment completed by ' + details.payer.name.given_name);
+          // Here you can POST to your server to fulfill the order if needed:
+          // fetch('/.netlify/functions/fulfill-order', { ... })
+        });
       }
-    });
+    }).render('#paypal-button-container');
 
     window.addEventListener('storage', renderCart);
   </script>
