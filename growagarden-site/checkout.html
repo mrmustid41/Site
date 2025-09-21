@@ -174,7 +174,7 @@
     </div>
   </div>
 
-  <!-- PayPal SDK -->
+  <!-- PayPal SDK with your LIVE client ID -->
   <script src="https://www.paypal.com/sdk/js?client-id=AdK-6pUoBpn6dQXcpjHUfk67XLB9oNd1-AzPDgHR2UFriTsKove93m7UYExWgQJIUzWl-BB9YfF7OsCW&currency=ZAR"></script>
 
   <script>
@@ -234,7 +234,8 @@
         if (!usernameInput.value.trim() || !email || email !== confirmEmail.value.trim()) {
           validityMsg.style.color = 'red';
           validityMsg.textContent = 'Please complete and verify your username & email before paying.';
-          return;
+          // explicitly reject click so popup doesn't show blank
+          return actions.reject();
         }
         return actions.order.create({
           purchase_units: [{
@@ -248,8 +249,7 @@
       onApprove: function(data, actions) {
         return actions.order.capture().then(function(details) {
           alert('Payment completed by ' + details.payer.name.given_name);
-          // Here you can POST to your server to fulfill the order if needed:
-          // fetch('/.netlify/functions/fulfill-order', { ... })
+          // You can POST to your server here to fulfill the order
         });
       }
     }).render('#paypal-button-container');
@@ -258,4 +258,3 @@
   </script>
 </body>
 </html>
-
