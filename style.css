@@ -85,3 +85,12 @@ header{
 #cart.open{
     right:0;
 }
+
+.add {
+    transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.add:active {
+    transform: scale(0.92);
+    filter: brightness(0.8);
+}
