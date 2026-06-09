@@ -107,6 +107,19 @@ document.getElementById(
 "open"
 );
 
+function goToCheckout() {
+
+if (cart.length === 0) {
+alert("Your cart is empty!");
+return;
+}
+
+// save cart so checkout page can use it
+localStorage.setItem("cart", JSON.stringify(cart));
+
+// go to checkout page
+window.location.href = "checkout.html";
+
 }
 
 loadCategory("money");
