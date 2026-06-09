@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pigeon Store</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:
+    radial-gradient(circle at top,#1e3a8a 0%,#020617 35%,#000000 100%);
+    color:white;
+}
+
+/* HEADER */
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px;
+    backdrop-filter:blur(10px);
+}
+
+.discord{
+    font-size:32px;
+}
+
+.cart-btn{
+    background:#2563eb;
+    border:none;
+    color:white;
+    padding:12px 20px;
+    border-radius:15px;
+    font-weight:bold;
+}
+
+/* HERO */
+
+.hero{
+    text-align:center;
+    padding:80px 20px;
+}
+
+.logo{
+    font-size:120px;
+}
+
+.hero h1{
+    font-size:4rem;
+    margin-top:10px;
+}
+
+.hero span{
+    color:#3b82f6;
+}
+
+.hero p{
+    color:#94a3b8;
+    margin-top:15px;
+    font-size:1.2rem;
+}
+
+.browse{
+    margin-top:30px;
+    background:#2563eb;
+    border:none;
+    color:white;
+    padding:18px 35px;
+    border-radius:20px;
+    font-size:1.1rem;
+    font-weight:bold;
+    box-shadow:0 0 25px rgba(37,99,235,.5);
+}
+
+/* SHOP */
+
+.shop{
+    padding:25px;
+}
+
+.shop-title{
+    font-size:2rem;
+    margin-bottom:20px;
+}
+
+.tabs{
+    display:flex;
+    gap:10px;
+    margin-bottom:25px;
+}
+
+.tabs button{
+    flex:1;
+    background:rgba(255,255,255,.05);
+    color:white;
+    border:1px solid rgba(255,255,255,.1);
+    height:55px;
+    border-radius:15px;
+}
+
+.tabs button.active{
+    background:#2563eb;
+}
+
+/* PRODUCTS */
+
+.products{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(10px);
+    border-radius:25px;
+    padding:20px;
+    text-align:center;
+
+    opacity:0;
+    transform:translateY(15px);
+
+    animation:fadeIn .4s forwards;
+}
+
+@keyframes fadeIn{
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.product-icon{
+    font-size:60px;
+    margin-bottom:10px;
+}
+
+.price{
+    font-size:1.8rem;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.stock{
+    color:#22c55e;
+    margin-bottom:10px;
+}
+
+.add{
+    width:100%;
+    height:50px;
+    border:none;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+}
+
+/* CART */
+
+.cart{
+    position:fixed;
+    top:0;
+    right:-350px;
+    width:320px;
+    height:100%;
+    background:#0f172a;
+    border-left:1px solid rgba(255,255,255,.1);
+    transition:.3s;
+    padding:20px;
+    overflow:auto;
+}
+
+.cart.open{
+    right:0;
+}
+
+.cart h2{
+    margin-bottom:20px;
+}
+
+.cart-item{
+    margin-bottom:10px;
+}
+
+.checkout{
+    width:100%;
+    height:55px;
+    background:#22c55e;
+    border:none;
+    border-radius:15px;
+    color:white;
+    font-size:1rem;
+    font-weight:bold;
+    margin-top:15px;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+
+<div class="discord">
+    🎮
+</div>
+
+<button class="cart-btn" onclick="toggleCart()">
+🛒 Cart (<span id="cartCount">0</span>)
+</button>
+
+</header>
+
+<section class="hero">
+
+<div class="logo">🕊️</div>
+
+<h1>Pigeon <span>Store</span></h1>
+
+<p>
+Fast delivery • Secure checkout • Great prices
+</p>
+
+<button class="browse"
+onclick="document.getElementById('shop').scrollIntoView()">
+Browse Store
+</button>
+
+</section>
+
+<section class="shop" id="shop">
+
+<h2 class="shop-title">Shop</h2>
+
+<div class="tabs">
+
+<button class="active"
+onclick="loadCategory('money',this)">
+Money
+</button>
+
+<button onclick="loadCategory('items',this)">
+Items
+</button>
+
+<button onclick="loadCategory('spawners',this)">
+Spawners
+</button>
+
+</div>
+
+<div class="products" id="products"></div>
+
+</section>
+
+<div class="cart" id="cart">
+
+<h2>Your Cart</h2>
+
+<div id="cartItems"></div>
+
+<h3>Total: €<span id="total">0.00</span></h3>
+
+<button class="checkout">
+Checkout
+</button>
+
+</div>
+
+<script>
+
+const products={
+
+money:[
+{
+name:"1M Money",
+price:0.99,
+icon:"💰"
+},
+{
+name:"10M Money",
+price:4.99,
+icon:"💰"
+}
+],
+
+items:[
+{
+name:"Rare Item",
+price:2.99,
+icon:"📦"
+}
+],
+
+spawners:[
+{
+name:"Skeleton Spawner",
+price:7.99,
+icon:"💀"
+},
+{
+name:"Cow Spawner",
+price:4.99,
+icon:"🐄"
+}
+]
+
+};
+
+let cart=[];
+
+function loadCategory(category,btn){
+
+document.querySelectorAll(".tabs button")
+.forEach(x=>x.classList.remove("active"));
+
+btn.classList.add("active");
+
+const div=document.getElementById("products");
+
+div.innerHTML="";
+
+products[category].forEach(item=>{
+
+div.innerHTML+=`
+
+<div class="card">
+
+<div class="product-icon">
+${item.icon}
+</div>
+
+<h3>${item.name}</h3>
+
+<div class="price">
+€${item.price}
+</div>
+
+<div class="stock">
+✓ In Stock
+</div>
+
+<button class="add"
+onclick="addToCart('${item.name}',${item.price})">
+Add To Cart
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+function addToCart(name,price){
+
+cart.push({name,price});
+
+document.getElementById("cartCount")
+.textContent=cart.length;
+
+updateCart();
+
+}
+
+function updateCart(){
+
+const items=document.getElementById("cartItems");
+
+items.innerHTML="";
+
+let total=0;
+
+cart.forEach(item=>{
+
+total+=item.price;
+
+items.innerHTML+=`
+<div class="cart-item">
+${item.name} - €${item.price}
+</div>
+`;
+
+});
+
+document.getElementById("total")
+.textContent=total.toFixed(2);
+
+}
+
+function toggleCart(){
+
+document.getElementById("cart")
+.classList.toggle("open");
+
+}
+
+loadCategory(
+"money",
+document.querySelector(".tabs button")
+);
+
+</script>
+
+</body>
+</html>

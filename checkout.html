@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pigeon Store Checkout</title>
+
+<script src="https://www.paypal.com/sdk/js?client-id=BAAMHiXh2QVTTrprm8ReZHueqT9_I5ur4KCqB-DIFYmZtA0WL6uzXPQd57yo7R39v8qbTzRsQLWuatqPmI&currency=EUR"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:
+    radial-gradient(circle at top,#1e3a8a 0%,#020617 35%,#000 100%);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.checkout{
+    width:100%;
+    max-width:600px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(12px);
+    border-radius:25px;
+    padding:30px;
+}
+
+.logo{
+    text-align:center;
+    font-size:80px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.summary{
+    background:rgba(255,255,255,.04);
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+}
+
+.total{
+    font-size:1.5rem;
+    font-weight:bold;
+    color:#60a5fa;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    border:none;
+    border-radius:12px;
+    background:#0f172a;
+    color:white;
+}
+
+.success{
+    display:none;
+    margin-top:20px;
+    padding:15px;
+    background:#166534;
+    border-radius:12px;
+}
+</style>
+</head>
+<body>
+
+<div class="checkout">
+
+<div class="logo">🕊️</div>
+
+<h1>Pigeon Store Checkout</h1>
+
+<div class="summary">
+
+<div class="row">
+<span>Order Total</span>
+<span class="total">€<span id="total">9.99</span></span>
+</div>
+
+</div>
+
+<input placeholder="Roblox Username">
+
+<input placeholder="Email Address">
+
+<div style="margin-top:20px">
+<div id="paypal-button-container"></div>
+</div>
+
+<div id="success" class="success">
+Payment completed successfully.
+</div>
+
+</div>
+
+<script>
+
+// Change this later to use cart data
+const total = "9.99";
+
+paypal.Buttons({
+
+createOrder: function(data, actions){
+
+return actions.order.create({
+purchase_units: [{
+amount: {
+value: total
+}
+}]
+});
+
+},
+
+onApprove: function(data, actions){
+
+return actions.order.capture().then(function(details){
+
+document.getElementById("success").style.display = "block";
+
+});
+
+}
+
+}).render('#paypal-button-container');
+
+</script>
+
+</body>
+</html>
